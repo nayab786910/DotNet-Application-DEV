@@ -1,0 +1,62 @@
+image: mcr.microsoft.com/dotnet/sdk:5.0
+
+pipelines:
+  branches:
+    master:
+      - step:
+          name: Build .NET application
+          image: mcr.microsoft.com/dotnet/sdk:5.0
+          script:
+            - dotnet restore
+            - dotnet build -c Release
+            - dotnet publish -c Release -o publish
+          artifacts:
+            - publish/**
+            
+      - step:
+          name: Build and push Docker image to DEV ECR
+          oidc: true
+          services:
+            - docker
+          script:
+          - docker build -t dontnet:$BITBUCKET_BUILD_NUMBER .
+          - pipe: atlassian/aws-ecr-push-image:2.0.0
+            variables:
+              #AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+              #AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+              AWS_OIDC_ROLE_ARN: arn:aws:iam::519852036875:role/BITBUCKET_CICD_03
+              AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
+              IMAGE_NAME: "dontnet"
+              TAGS: $BITBUCKET_BUILD_NUMBER
+              
+      - step:
+          name: Build and push Docker image to PROD ECR
+          oidc: true
+          services:
+            - docker
+          script:
+          - docker build -t reactjs:$BITBUCKET_BUILD_NUMBER .
+          - pipe: atlassian/aws-ecr-push-image:2.0.0
+            variables:
+              #AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+              #AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+              AWS_OIDC_ROLE_ARN: arn:aws:iam::519852036875:role/BITBUCKET_CICD_03
+              AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
+              IMAGE_NAME: "reactjs"
+              TAGS: $BITBUCKET_BUILD_NUMBER
+              
+      - step:
+          name: "Deploy to PROD"
+          deployment: production
+          script:
+            - apt-get update && apt-get install -y gettext-base # Install gettext-base package
+            - envsubst < springboot.yaml > deployment.yaml
+            - pipe: atlassian/aws-eks-kubectl-run:1.2.0
+              variables:
+                AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+                AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+                AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
+                CLUSTER_NAME: "eks_prod"
+                KUBECTL_COMMAND: "apply"
+                RESOURCE_PATH: "deployment.yaml"
+                DEBUG: "true"
