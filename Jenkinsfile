@@ -5,6 +5,13 @@ pipeline {
                 }
 
     stages {
+       stage('Detect language') {
+            steps {
+                
+                step([$class: 'LanguageDetector', personalToken: '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', repoURL: 'https://github.com/Abhilash-1201/springboot-cicd-k8stask' ])
+            }
+        }
+        
         stage('Clone repository') {
             steps {
                 git branch: 'master', url: 'https://github.com/Abhilash-1201/DotNet-Application-DEV.git' 
