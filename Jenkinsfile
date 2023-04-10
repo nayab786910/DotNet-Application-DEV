@@ -1,10 +1,13 @@
 pipeline {
     agent any
+    environment { 
+                  registry1 = "519852036875.dkr.ecr.us-east-2.amazonaws.com/cloudjournee:${env.BUILD_NUMBER}"
+                }
 
     stages {
         stage('Clone repository') {
             steps {
-                checkout scm
+                git branch: 'master', url: 'https://github.com/Abhilash-1201/DotNet-Application-DEV.git' 
             }
         }
 
@@ -17,29 +20,24 @@ pipeline {
             }
         }
 
-        stage('Build and push Docker image to ECR') {
-            environment {
-                ECR_REGISTRY = '519852036875.dkr.ecr.us-east-2.amazonaws.com/cloudjournee'
-                IMAGE_NAME = 'cloudjournee'
-                TAG = 'latest'
-            }
-
-            steps {
-                sh 'echo "Building Docker image..."'
-                sh 'docker build -t $ECR_REGISTRY/$IMAGE_NAME:$TAG .'
-
-                withCredentials([[
-                    credentialsId: 'my-ecr-credentials',
-                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
-                ]]) {
-                    sh 'echo "Logging in to Amazon ECR..."'
-                    sh 'aws ecr get-login-password | docker login --username AWS --password-stdin $ECR_REGISTRY'
-
-                    sh 'echo "Pushing Docker image to Amazon ECR..."'
-                    sh 'docker push $ECR_REGISTRY/$IMAGE_NAME:$TAG'
-                }
-            }
-        }
+ //Build the docker image to store in to ECR
+        stage('Building docker image for dev')  {
+         steps{
+           script{
+               dockerImage = docker.build registry1
+           }
+         }
+       }
+        // Push the docker image in to dev ECR
+       stage('Pushing docker image to Dev-ECR') {
+        steps{  
+         script {
+                sh 'docker logout'
+                sh 'aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 519852036875.dkr.ecr.us-east-2.amazonaws.com'
+                sh 'docker push ${registry1}'
+               }
+           }
+      
+        }  
     }
 }
