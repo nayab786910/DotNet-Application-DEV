@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment { 
-                  registry1 = "519852036875.dkr.ecr.us-east-2.amazonaws.com/cloudjournee:${env.BUILD_NUMBER}"
+                  registry1 = "519852036875.dkr.ecr.us-east-2.amazonaws.com/myrepo:${env.BUILD_NUMBER}"
                 }
 
     stages {
