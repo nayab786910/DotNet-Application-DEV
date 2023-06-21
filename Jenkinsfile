@@ -15,7 +15,7 @@ pipeline {
 
         stage('Build .NET application') {
             steps {
-                sh 'dotnet restore'
+                //sh 'dotnet restore'
                 sh 'dotnet build -c Release'
                 sh 'dotnet publish -c Release -o publish'
                 archiveArtifacts artifacts: 'publish/**', allowEmptyArchive: true
