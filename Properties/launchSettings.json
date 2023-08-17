@@ -13,7 +13,7 @@
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "S247_LICENSE_KEY"      : "in_c674aefdaa1748c4425135c42d27bcc1"
+        "S247_LICENSE_KEY"      : "xxxxxxxxxxxxxxxxxxxxxx"
       }
     },
     "webapp": {
@@ -22,7 +22,7 @@
       "applicationUrl": "https://localhost:5001;http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "S247_LICENSE_KEY"      : "in_c674aefdaa1748c4425135c42d27bcc1"
+        "S247_LICENSE_KEY"      : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
       }
     }
   }
