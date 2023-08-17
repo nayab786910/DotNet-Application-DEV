@@ -4,6 +4,10 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Site24x7.DotNetCoreAgent" Version="6.2.3" />
+  </ItemGroup>
+
 
 
 </Project>

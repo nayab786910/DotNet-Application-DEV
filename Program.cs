@@ -7,6 +7,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
+builder.Services.AddSite24x7ApmInsights();
+
 namespace webapp
 {
     public class Program

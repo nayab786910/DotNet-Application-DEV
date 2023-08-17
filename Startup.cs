@@ -23,6 +23,7 @@ namespace webapp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSite24x7ApmInsights();
             services.AddControllersWithViews();
         }
 
